@@ -10,7 +10,7 @@ const sampleData = [
         "name": "NFT#1",
         "description": "Alchemy's First NFT",
         "website":"http://axieinfinity.io",
-        "image":"https://gateway.pinata.cloud/ipfs/QmTsRJX7r5gyubjkdmzFrKQhHv74p5wT9LdeF1m3RTqrE5",
+        "image":"https://ipfs.io/ipfs/QmTsRJX7r5gyubjkdmzFrKQhHv74p5wT9LdeF1m3RTqrE5",
         "price":"0.03ETH",
         "currentlySelling":"True",
         "address":"0xe81Bf5A757CB4f7F82a2F23b1e59bE45c33c5b13",
@@ -19,7 +19,7 @@ const sampleData = [
         "name": "NFT#2",
         "description": "Alchemy's Second NFT",
         "website":"http://axieinfinity.io",
-        "image":"https://gateway.pinata.cloud/ipfs/QmdhoL9K8my2vi3fej97foiqGmJ389SMs55oC5EdkrxF2M",
+        "image":"https://ipfs.io/ipfs/QmdhoL9K8my2vi3fej97foiqGmJ389SMs55oC5EdkrxF2M",
         "price":"0.03ETH",
         "currentlySelling":"True",
         "address":"0xe81Bf5A757C4f7F82a2F23b1e59bE45c33c5b13",
@@ -28,7 +28,7 @@ const sampleData = [
         "name": "NFT#3",
         "description": "Alchemy's Third NFT",
         "website":"http://axieinfinity.io",
-        "image":"https://gateway.pinata.cloud/ipfs/QmTsRJX7r5gyubjkdmzFrKQhHv74p5wT9LdeF1m3RTqrE5",
+        "image":"https://ipfs.io/ipfs/QmTsRJX7r5gyubjkdmzFrKQhHv74p5wT9LdeF1m3RTqrE5",
         "price":"0.03ETH",
         "currentlySelling":"True",
         "address":"0xe81Bf5A757C4f7F82a2F23b1e59bE45c33c5b13",
@@ -49,9 +49,11 @@ async function getAllNFTs() {
 
     //Fetch all the details of every NFT from the contract and display
     const items = await Promise.all(transaction.map(async i => {
-        const tokenURI = await contract.tokenURI(i.tokenId);
+        let tokenURI = await contract.tokenURI(i.tokenId);
+        tokenURI = tokenURI.replace(/gateway.pinata.cloud/, "ipfs.io")
         let meta = await axios.get(tokenURI);
         meta = meta.data;
+        meta.image = meta.image.replace(/gateway.pinata.cloud/, "ipfs.io")
 
         let price = ethers.utils.formatUnits(i.price.toString(), 'ether');
         let item = {
@@ -59,7 +61,7 @@ async function getAllNFTs() {
             tokenId: i.tokenId.toNumber(),
             seller: i.seller,
             owner: i.owner,
-            image: meta.image,
+            image: meta.image.replace(/gateway.pinata.cloud/, "ipfs.io"),
             name: meta.name,
             description: meta.description,
         }

@@ -31,9 +31,11 @@ export default function Profile () {
         */
         
         const items = await Promise.all(transaction.map(async i => {
-            const tokenURI = await contract.tokenURI(i.tokenId);
+            let tokenURI = await contract.tokenURI(i.tokenId);
+            tokenURI = tokenURI.replace(/gateway.pinata.cloud/, "ipfs.io")
             let meta = await axios.get(tokenURI);
             meta = meta.data;
+            meta.image = meta.image.replace(/gateway.pinata.cloud/, "ipfs.io")
 
             let price = ethers.utils.formatUnits(i.price.toString(), 'ether');
             let item = {
@@ -41,7 +43,7 @@ export default function Profile () {
                 tokenId: i.tokenId.toNumber(),
                 seller: i.seller,
                 owner: i.owner,
-                image: meta.image,
+                image: meta.image.replace(/gateway.pinata.cloud/, "ipfs.io"),
                 name: meta.name,
                 description: meta.description,
             }
@@ -61,7 +63,7 @@ export default function Profile () {
         getNFTData(tokenId);
 
     return (
-        <div className="profileClass" style={{"min-height":"100vh"}}>
+        <div className="profileClass" style={{"minHeight":"100vh"}}>
             <Navbar></Navbar>
             <div className="profileClass">
             <div className="flex text-center flex-col mt-11 md:text-2xl text-white">

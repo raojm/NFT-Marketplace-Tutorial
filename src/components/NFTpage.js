@@ -21,10 +21,12 @@ async function getNFTData(tokenId) {
     //Pull the deployed contract instance
     let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer)
     //create an NFT Token
-    const tokenURI = await contract.tokenURI(tokenId);
+    let tokenURI = await contract.tokenURI(tokenId);
+    tokenURI = tokenURI.replace(/gateway.pinata.cloud/, "ipfs.io")
     const listedToken = await contract.getListedTokenForId(tokenId);
     let meta = await axios.get(tokenURI);
     meta = meta.data;
+    meta.image = meta.image.replace(/gateway.pinata.cloud/, "ipfs.io")
     console.log(listedToken);
 
     let item = {
@@ -32,7 +34,7 @@ async function getNFTData(tokenId) {
         tokenId: tokenId,
         seller: listedToken.seller,
         owner: listedToken.owner,
-        image: meta.image,
+        image: meta.image.replace(/gateway.pinata.cloud/, "ipfs.io"),
         name: meta.name,
         description: meta.description,
     }
@@ -72,7 +74,7 @@ async function buyNFT(tokenId) {
         getNFTData(tokenId);
 
     return(
-        <div style={{"min-height":"100vh"}}>
+        <div style={{"minHeight":"100vh"}}>
             <Navbar></Navbar>
             <div className="flex ml-20 mt-20">
                 <img src={data.image} alt="" className="w-2/5" />
